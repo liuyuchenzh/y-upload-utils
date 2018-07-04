@@ -1,0 +1,19 @@
+{
+  "name": "y-upload-utils",
+  "version": "1.0.0",
+  "description": "upload utilities",
+  "main": "index.js",
+  "author": "Yuchen Liu",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^6.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liuyuchenzh/y-upload-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/liuyuchenzh/y-upload-utils/issues"
+  },
+  "homepage": "https://github.com/liuyuchenzh/y-upload-utils"
+}

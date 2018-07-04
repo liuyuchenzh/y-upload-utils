@@ -55,17 +55,29 @@ const updateCacheFile = (input = {}) => {
  * whether has a record
  * if the option (passToCdn) has changed
  * consider as there is no valid record
- * @param {string} key
+ * @param {string} hash
+ * @param {string} locationHash
  * @returns {boolean}
  */
-const shouldUseCache = key => {
+const shouldUseCache = (hash, locationHash) => {
   const oldOption = read(LAST_OPTION_KEY)
   const newOption = read(OPTION_KEY)
   const cache = read(CACHE_KEY)
+  const key = locationHash + hash
   const sameOption = JSON.stringify(oldOption) === JSON.stringify(newOption)
-  return (
+  const useCache =
     sameOption && key in cache && cache[key] && typeof cache[key] === 'string'
-  )
+  // only try to delete old entry when it is new content
+  if (!useCache) tryDeleteOldEntry(locationHash)
+  return useCache
+}
+
+const tryDeleteOldEntry = locationHash => {
+  const cache = read(CACHE_KEY)
+  const key = Object.keys(cache).find(k => k.indexOf(locationHash) === 0)
+  if (key) {
+    delete cache[key]
+  }
 }
 
 const saveToCache = (key, value) => {
@@ -78,14 +90,6 @@ const readFromCache = key => {
   const cache = read(CACHE_KEY)
   return cache[key]
 }
-
-/**
- * to accurately get the new option (passToCdn)
- * needs to invoke this function after saveOption
- * @param {object=} obj
- * @returns {*}
- */
-const getOption = (obj = cacheObj) => obj[OPTION_KEY]
 
 /**
  * save configs and initiate triviaCache
@@ -116,7 +120,7 @@ const init = (option = {}) => {
 const Cache = {
   update: updateCache,
   end: updateCacheFile,
-  shouldUpload: key => !shouldUseCache(key),
+  shouldUpload: (hash, locationHash) => !shouldUseCache(hash, locationHash),
   getUrl: readFromCache,
   getHash,
   init

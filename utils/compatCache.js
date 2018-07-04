@@ -26,16 +26,19 @@ const compatUpload = (cdn, option = {}) => {
     const { toUpload, pairFromCache, localHashMap } = files.reduce(
       (last, file) => {
         const fileContent = read(file)
+        const locationHash = Cache.getHash(file)
         const hash = Cache.getHash(fileContent)
-        if (Cache.shouldUpload(hash)) {
+        if (Cache.shouldUpload(hash, locationHash)) {
           return Object.assign(last, {
             toUpload: last.toUpload.concat(file),
-            localHashMap: Object.assign(last.localHashMap, { [file]: hash })
+            localHashMap: Object.assign(last.localHashMap, {
+              [file]: locationHash + hash
+            })
           })
         }
         return Object.assign(last, {
           pairFromCache: Object.assign(last.pairFromCache, {
-            [file]: Cache.getUrl(hash)
+            [file]: Cache.getUrl(locationHash + hash)
           })
         })
       },

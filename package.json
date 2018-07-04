@@ -1,6 +1,6 @@
 {
   "name": "y-upload-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "upload utilities",
   "main": "index.js",
   "author": "Yuchen Liu",

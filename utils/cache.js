@@ -63,29 +63,76 @@ const shouldUseCache = (hash, locationHash) => {
   const oldOption = read(LAST_OPTION_KEY)
   const newOption = read(OPTION_KEY)
   const cache = read(CACHE_KEY)
-  const key = locationHash + hash
+  const key = Object.keys(cache).find(findContent(hash))
   const sameOption = JSON.stringify(oldOption) === JSON.stringify(newOption)
   const useCache =
-    sameOption && key in cache && cache[key] && typeof cache[key] === 'string'
-  // only try to delete old entry when it is new content
-  if (!useCache) tryDeleteOldEntry(locationHash)
+    sameOption && !!key && cache[key] && typeof cache[key] === 'string'
+  const contentSameButLocChanged = useCache && key.indexOf(locationHash) !== 0
+  // try to delete old entry with location when it is new content
+  if (!useCache) {
+    tryDeleteOldEntry(hash, 'content')
+    tryDeleteOldEntry(locationHash, 'location')
+  } else if (contentSameButLocChanged) {
+    updateCache(locationHash + hash, cache[key])
+    tryDeleteOldEntry(hash, 'content')
+  }
   return useCache
 }
 
-const tryDeleteOldEntry = locationHash => {
+/**
+ * find key from cache based on location hash
+ * @param {string} locationHash
+ * @return {(key: string) => *}
+ */
+const findLocation = locationHash => k => k.indexOf(locationHash) === 0
+/**
+ * find key from cache based on content hash
+ * @param {string} hash
+ * @return {(key: string) => *}
+ */
+const findContent = hash => k => k.slice(0 - hash.length) === hash
+
+/**
+ * delete entry in cache
+ * avoid giant cache
+ * @param {string} hash
+ * @param {string=} mode
+ * @returns {void}
+ */
+const tryDeleteOldEntry = (hash, mode) => {
   const cache = read(CACHE_KEY)
-  const key = Object.keys(cache).find(k => k.indexOf(locationHash) === 0)
+  const keys = Object.keys(cache)
+  let key
+  switch (mode) {
+    case 'location':
+      key = keys.find(findLocation(hash))
+      break
+    case 'content':
+    default:
+      key = keys.find(findContent(hash))
+  }
   if (key) {
     delete cache[key]
   }
 }
 
+/**
+ * save to cache
+ * @param {string} key
+ * @param {*} value
+ * @returns {object}
+ */
 const saveToCache = (key, value) => {
   const cache = read(CACHE_KEY)
   cache[key] = value
   return cache
 }
 
+/**
+ * read from cache
+ * @param {string} key
+ * @returns {*}
+ */
 const readFromCache = key => {
   const cache = read(CACHE_KEY)
   return cache[key]
@@ -96,6 +143,7 @@ const readFromCache = key => {
  * @param {object=} option
  * @param {object=} option.passToCdn
  * @param {string=} option.cacheLocation
+ * @returns {void}
  */
 const init = (option = {}) => {
   const {

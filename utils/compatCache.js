@@ -42,7 +42,7 @@ const compatUpload = (cdn, option = {}) => {
         // update content
         // @side-effects
         if (runPreProcess) {
-          write(fileContent, file)
+          write(file, fileContent)
         }
         const locationHash = Cache.getHash(file)
         const hash = Cache.getHash(fileContent)

@@ -36,12 +36,13 @@ const compatUpload = (cdn, option = {}) => {
   const upload = async files => {
     const { toUpload, pairFromCache, localHashMap } = files.reduce(
       (last, file) => {
+        const originContent = read(file)
         const fileContent = runPreProcess
-          ? beforeUpload(read(file), file)
-          : read(file)
+          ? beforeUpload(originContent, file)
+          : originContent
         // update content
         // @side-effects
-        if (runPreProcess) {
+        if (runPreProcess && originContent !== fileContent) {
           write(file, fileContent)
         }
         const locationHash = Cache.getHash(file)

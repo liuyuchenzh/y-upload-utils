@@ -1,7 +1,7 @@
 const fs = require('fs')
 const Cache = require('./cache.js')
 const read = location => fs.readFileSync(location, 'utf-8')
-const write = (location, content) = fs.writeFileSync(location, content)
+const write = (location, content) => fs.writeFileSync(location, content)
 
 /**
  * @typedef {(files: string[], option: object=) => Promise<object>} upload
@@ -28,7 +28,7 @@ const compatUpload = (cdn, option = {}) => {
   // therefore file content needs to be updated (as side effects)
   // but only one compression per file wanted
   // so if using cache
-  // compression will happen here, for upload detection 
+  // compression will happen here, for upload detection
   // (whether content has been changed after compression)
   // or only before real upload, which is out of the scope of this tool
   const { beforeUpload } = option
@@ -36,7 +36,9 @@ const compatUpload = (cdn, option = {}) => {
   const upload = async files => {
     const { toUpload, pairFromCache, localHashMap } = files.reduce(
       (last, file) => {
-        const fileContent = runPreProcess ? beforeUpload(read(file), file) : read(file)
+        const fileContent = runPreProcess
+          ? beforeUpload(read(file), file)
+          : read(file)
         // update content
         // @side-effects
         if (runPreProcess) {

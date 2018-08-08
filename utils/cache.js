@@ -1,7 +1,7 @@
 const path = require('path')
-const fs = require('fs')
 const fse = require('fs-extra')
 const md5 = require('md5')
+const { write, read: readFile } = require('./io')
 // tricky part
 // everything refer to this object
 const trivialCache = {}
@@ -48,7 +48,7 @@ const updateCacheFile = (input = {}) => {
   const cache = read(CACHE_KEY)
   const location = read(LOCATION_KEY)
   const toSave = Object.assign(cache, inputObj)
-  fs.writeFileSync(location, JSON.stringify(toSave))
+  write(location, JSON.stringify(toSave))
 }
 
 /**
@@ -156,7 +156,7 @@ const init = (option = {}) => {
   )
   save(LOCATION_KEY, location)
   fse.ensureFileSync(location)
-  const cacheRaw = fs.readFileSync(location, 'utf-8').trim() || '{}'
+  const cacheRaw = readFile(location).trim() || '{}'
   const cacheObj = JSON.parse(cacheRaw)
   save(CACHE_KEY, cacheObj)
   save(OPTION_KEY, passToCdn)

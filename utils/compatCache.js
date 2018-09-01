@@ -1,3 +1,4 @@
+const path = require('path')
 const Cache = require('./cache.js')
 const { read } = require('./io')
 
@@ -25,7 +26,9 @@ const compatUpload = (cdn, option = {}) => {
     const { toUpload, pairFromCache, localHashMap } = files.reduce(
       (last, file) => {
         const fileContent = read(file)
-        const locationHash = Cache.getHash(file)
+        // using relative location so cache could be shared among developers
+        const relativeLocation = path.relative(__dirname, file)
+        const locationHash = Cache.getHash(relativeLocation)
         const hash = Cache.getHash(fileContent)
         if (Cache.shouldUpload(hash, locationHash)) {
           return Object.assign(last, {

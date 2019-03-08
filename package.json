@@ -6,7 +6,7 @@
   "author": "Yuchen Liu",
   "license": "MIT",
   "dependencies": {
-    "fs-extra": "^6.0.1",
+    "fs-extra": "^7.0.1",
     "md5": "^2.2.1"
   },
   "repository": {

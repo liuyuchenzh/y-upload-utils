@@ -1,6 +1,6 @@
-const path = require('path')
-const Cache = require('./cache.js')
-const { read } = require('./io')
+import path from 'path'
+import { Cache } from './cache'
+import { read } from './io'
 
 /**
  * @typedef {(files: string[], option: object=) => Promise<object>} upload
@@ -19,10 +19,10 @@ const { read } = require('./io')
  * @param {string=} option.cacheLocation where to put cache file
  * @returns {Cdn}
  */
-const compatUpload = (cdn, option = {}) => {
+export const compatCache = (cdn, option = {}) => {
   // init to save option
   Cache.init(option)
-  const upload = async files => {
+  const upload = async (files) => {
     const { toUpload, pairFromCache, localHashMap } = files.reduce(
       (last, file) => {
         const fileContent = read(file)
@@ -34,20 +34,20 @@ const compatUpload = (cdn, option = {}) => {
           return Object.assign(last, {
             toUpload: last.toUpload.concat(file),
             localHashMap: Object.assign(last.localHashMap, {
-              [file]: locationHash + hash
-            })
+              [file]: locationHash + hash,
+            }),
           })
         }
         return Object.assign(last, {
           pairFromCache: Object.assign(last.pairFromCache, {
-            [file]: Cache.getUrl(locationHash + hash)
-          })
+            [file]: Cache.getUrl(locationHash + hash),
+          }),
         })
       },
       {
         localHashMap: {},
         toUpload: [],
-        pairFromCache: {}
+        pairFromCache: {},
       }
     )
     const res = toUpload.length
@@ -63,8 +63,6 @@ const compatUpload = (cdn, option = {}) => {
     return Object.assign(res, pairFromCache)
   }
   return {
-    upload
+    upload,
   }
 }
-
-module.exports = compatUpload

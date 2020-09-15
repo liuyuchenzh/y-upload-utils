@@ -2,12 +2,23 @@
   "name": "y-upload-utils",
   "version": "1.5.0",
   "description": "upload utilities",
-  "main": "index.js",
+  "source": "src/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "unpkg": "dist/index.umd.js",
+  "files": [
+    "dist"
+  ],
   "author": "Yuchen Liu",
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^9.0.0",
     "md5": "^2.2.1"
+  },
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch",
+    "prepublishOnly": "yarn build"
   },
   "repository": {
     "type": "git",
@@ -16,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/liuyuchenzh/y-upload-utils/issues"
   },
-  "homepage": "https://github.com/liuyuchenzh/y-upload-utils"
+  "homepage": "https://github.com/liuyuchenzh/y-upload-utils",
+  "devDependencies": {
+    "microbundle": "^0.12.3"
+  }
 }

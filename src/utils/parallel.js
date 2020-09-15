@@ -5,7 +5,7 @@ const LIMIT = 10
  * @param {number} limit
  * @returns {(files: string[]) => string[]}
  */
-const slice = limit => files =>
+const slice = (limit) => (files) =>
   files.reduce((last, item, index) => {
     const i = Math.floor(index / limit)
     if (!last[i]) last[i] = []
@@ -28,18 +28,18 @@ const slice = limit => files =>
  * @param {number=} option.sliceLimit slice limit
  * @returns {Cdn}
  */
-module.exports = (cdn, option = {}) => {
+export const parallel = (cdn, option = {}) => {
   const { sliceLimit = LIMIT } = option
   const sliceFn = slice(sliceLimit)
   const parallelCdn = {
-    upload: async files => {
+    upload: async (files) => {
       const res = await Promise.all(
-        sliceFn(files).map(chunk => cdn.upload(chunk))
+        sliceFn(files).map((chunk) => cdn.upload(chunk))
       )
       return res.reduce((last, chunkRes) => {
         return Object.assign(last, chunkRes)
       }, {})
-    }
+    },
   }
   return parallelCdn
 }

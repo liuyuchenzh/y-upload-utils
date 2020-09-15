@@ -1,7 +1,7 @@
-const path = require('path')
-const fse = require('fs-extra')
-const md5 = require('md5')
-const { write, read: readFile } = require('./io')
+import path from 'path'
+import fse from 'fs-extra'
+import md5 from 'md5'
+import { write, read as readFile } from './io'
 // tricky part
 // everything refer to this object
 const trivialCache = {}
@@ -24,7 +24,7 @@ const save = (key, value) => {
  * get value from trivialCache
  * @param {string} key
  */
-const read = key => trivialCache[key]
+const read = (key) => trivialCache[key]
 
 const updateCache = (key, cdnUrl) => {
   const cache = read(CACHE_KEY)
@@ -84,13 +84,13 @@ const shouldUseCache = (hash, locationHash) => {
  * @param {string} locationHash
  * @return {(key: string) => *}
  */
-const findLocation = locationHash => k => k.indexOf(locationHash) === 0
+const findLocation = (locationHash) => (k) => k.indexOf(locationHash) === 0
 /**
  * find key from cache based on content hash
  * @param {string} hash
  * @return {(key: string) => *}
  */
-const findContent = hash => k => k.slice(0 - hash.length) === hash
+const findContent = (hash) => (k) => k.slice(0 - hash.length) === hash
 
 /**
  * delete entry in cache
@@ -133,7 +133,7 @@ const saveToCache = (key, value) => {
  * @param {string} key
  * @returns {*}
  */
-const readFromCache = key => {
+const readFromCache = (key) => {
   const cache = read(CACHE_KEY)
   return cache[key]
 }
@@ -148,7 +148,7 @@ const readFromCache = key => {
 const init = (option = {}) => {
   const {
     passToCdn = {},
-    cacheLocation = path.resolve(__dirname, '../cache.json')
+    cacheLocation = path.resolve(__dirname, '../cache.json'),
   } = option
   const location = path.join(
     cacheLocation.replace(/cache\.json$/, ''),
@@ -165,13 +165,11 @@ const init = (option = {}) => {
   saveToCache(OPTION_KEY, passToCdn)
 }
 
-const Cache = {
+export const Cache = {
   update: updateCache,
   end: updateCacheFile,
   shouldUpload: (hash, locationHash) => !shouldUseCache(hash, locationHash),
   getUrl: readFromCache,
   getHash,
-  init
+  init,
 }
-
-module.exports = Cache

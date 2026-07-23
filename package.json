@@ -12,7 +12,7 @@
   "author": "Yuchen Liu",
   "license": "MIT",
   "dependencies": {
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^11.0.0",
     "md5": "^2.2.1"
   },
   "scripts": {

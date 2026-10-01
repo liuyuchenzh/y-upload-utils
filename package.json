@@ -29,6 +29,6 @@
   },
   "homepage": "https://github.com/liuyuchenzh/y-upload-utils",
   "devDependencies": {
-    "microbundle": "^0.12.3"
+    "microbundle": "^0.15.0"
   }
 }
